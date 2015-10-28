@@ -1,53 +1,47 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
 class Solution {
 public:
-	string simplifyPath(string path) {
-		deque<string> pathStack;
+    string appendValue(string orig, int val)
+    {
+        if (!orig.empty())
+        {
+            return orig + "->" + to_string(val);
+        }
+        
+        return to_string(val);
+    }
 
-		string subPath;
-		int prev = 0;
-		while (true)
-		{
-			auto index = path.find("/", prev);
-			if (index > 0)
-			{
-				subPath = path.substr(prev, index - prev);
+    void midTrans(TreeNode *root, string path, vector<string> &res){
+        if (root)
+        {
+            if (!root->left && !root->right)
+            {
+                res.push_back(appendValue(path, root->val));
+            }
+            
+            if (root->left)
+            {
+                midTrans(root->left, appendValue(path, root->val), res);
+            }
+            
+            if (root->right)
+            {
+                midTrans(root->right, appendValue(path, root->val), res);
+            }
+        }
+    }
 
-				if (subPath == "..")
-				{
-					if (!pathStack.empty())
-					{
-						pathStack.pop_back();
-					}
-				}
-				else if (!subPath.empty() && subPath != ".")
-				{
-					pathStack.push_back(subPath);
-				}
-			}
-
-			if (index == string::npos)
-			{
-				break;
-			}
-
-			prev = index + 1;
-		}
-
-		// convert stack to path
-		string simplifiedPath;
-		
-		if (pathStack.empty())
-		{
-		    return "/";
-		}
-
-		for (auto &str : pathStack)
-		{
-			simplifiedPath += '/';
-			simplifiedPath += str;
-		}
-
-
-		return simplifiedPath;
-	}
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> res;
+        midTrans(root, "", res);
+        return res;
+    }
 };
